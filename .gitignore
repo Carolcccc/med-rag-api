@@ -29,3 +29,4 @@ dist/
 .pytest_cache/
 
 data/
+faiss_index/
