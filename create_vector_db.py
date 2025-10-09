@@ -28,17 +28,20 @@ def create_vector_database():
         print(f"Error: Directory '{DATA_PATH}' not found. Please create it and add .txt files.")
         return
 
-    for filename in os.listdir(DATA_PATH):
-        if filename.endswith(".txt"):
-            file_path = os.path.join(DATA_PATH, filename)
-            print(f"Loading document: {file_path}")
-            # Use TextLoader to load the file content
-            try:
-                loader = TextLoader(file_path, encoding='utf-8')
-                documents.extend(loader.load())
-            except Exception as e:
-                print(f"Could not load {file_path}: {e}")
-                continue
+    # Walk the data directory recursively so files in subfolders (e.g. data/pmc_txt)
+    # are discovered and ingested.
+    for root, _, files in os.walk(DATA_PATH):
+        for filename in files:
+            if filename.endswith(".txt"):
+                file_path = os.path.join(root, filename)
+                print(f"Loading document: {file_path}")
+                # Use TextLoader to load the file content
+                try:
+                    loader = TextLoader(file_path, encoding='utf-8')
+                    documents.extend(loader.load())
+                except Exception as e:
+                    print(f"Could not load {file_path}: {e}")
+                    continue
 
     if not documents:
         print(f"Error: No .txt files were loaded from {DATA_PATH}. Please ensure you have added content.")
