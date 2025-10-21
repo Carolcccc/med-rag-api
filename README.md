@@ -40,7 +40,7 @@ python -m uvicorn main:app --host 127.0.0.1 --port 8000
 5. Test `/ask`:
 ```bash
 curl -X POST http://127.0.0.1:8000/ask -H 'Content-Type: application/json' \
-  -d '{"question":"什麼是心肌梗塞？"}'
+  -d '{"question":"What is Myocardial Infarction (MI)？"}'
 ```
 
 ## Reddit credentials
