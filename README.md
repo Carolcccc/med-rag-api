@@ -49,9 +49,3 @@ curl -X POST http://127.0.0.1:8000/ask -H 'Content-Type: application/json' \
 ## Security & GitHub
 - `export_reddit.sh`, `data/`, `faiss_index/`, and `venv/` are already in `.gitignore`. Double-check before pushing. If a secret was accidentally committed, reset the secret in the provider (e.g. Reddit dev console) and remove it from git history.
 
-## Notes & next steps
-- Consider migrating LangChain deprecated imports to `langchain_community` versions and pinning `numpy/faiss/torch` to compatible versions for reproducible environments.
-- Add unit tests for the preprocessing and a lightweight CI workflow if you plan to host the repo publicly.
-
-## Contact
-If you want me to push this repo to GitHub for you, provide the remote `git` URL (SSH or HTTPS) and I will add it as `origin` and push the `main` branch. I will not upload any secrets.
