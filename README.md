@@ -1,5 +1,6 @@
 **Healthcare RAG API**
-🚧 Project Status: Work in Progress (WIP)
+
+**🚧 Project Status: Work in Progress (WIP)**
 This repository is a technical prototype currently undergoing active development. The primary focus is on refining retrieval logic and exploring diverse embedding strategies for specialized medical-specific corpora.
 
 **Overview**
