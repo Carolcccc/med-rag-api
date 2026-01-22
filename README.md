@@ -1,51 +1,52 @@
-# Healthcare RAG API
+**Healthcare RAG API**
+🚧 Project Status: Work in Progress (WIP)
+This repository is a technical prototype currently undergoing active development. The primary focus is on refining retrieval logic and exploring diverse embedding strategies for specialized medical-specific corpora.
 
-Small local RAG (Retrieval-Augmented Generation) demo focused on healthcare data ingestion and question-answering. This repository contains scripts to fetch medical text (PMC metadata), optional guideline PDFs, and Reddit posts; preprocessing and de-identification helpers; a small pipeline to chunk/embed documents into a FAISS vectorstore; and a FastAPI service that answers queries using a retriever + LLM.
+**Overview**
+This project implements a small-scale Retrieval-Augmented Generation (RAG) pipeline focused on healthcare data ingestion and question-answering. By integrating medical literature (PMC metadata), clinical guidelines, and community-driven insights (Reddit), the system provides context-aware responses grounded in verified data sources.
 
-WARNING: This repository may handle sensitive data. Do NOT commit secrets (API keys, client secrets). Use the provided `export_reddit.sh` or environment variables (and add them to your local `.gitignore`) rather than committing credentials.
+**🚀 Key Features**
+Multi-Source Ingestion: Automated scripts for fetching PubMed/PMC metadata and clinical guideline PDFs.
+Privacy-First Data Handling: Implements de-identification helpers to process sensitive healthcare text before indexing.
+Efficient Vector Search: Utilizes FAISS for high-performance similarity search and document retrieval.
+Asynchronous API: A FastAPI service exposing an /ask endpoint for real-time retriever-LLM orchestration.
 
-## Contents
-- `create_vector_db.py` — chunk, embed and save FAISS vector store from `.txt` files found under `data/`.
-- `main.py` — FastAPI app exposing `/ask` endpoint (loads local FAISS vectorstore and uses OpenAI or Hugging Face LLM fallback).
-- `scripts/` — data collection & preprocessing helpers:
-  - `01_fetch_pmc.py` — fetch PubMed/PMC metadata using Entrez
-  - `02_fetch_guidelines.py` — download guideline PDFs and extract text (requires PDF URLs)
-  - `03_fetch_reddit.py` — fetch Reddit posts with PRAW (requires credentials)
-  - `04_pmc_to_txt.py` — convert PMC JSONL to `.txt` files with simple de-id
-  - `README.md` — notes about the scripts
-- `data/` — (ignored) raw and processed files
-- `faiss_index/` — (ignored) generated FAISS index
-- `export_reddit.sh` — template (ignored) to set Reddit credentials locally
+**🛠️ System Architecture**
+Extraction: Fetches structured medical metadata and unstructured community posts via APIs.
+Transformation: Normalizes heterogeneous data sources into a unified .txt format with de-identification logic.
+Indexing: Chunks documents and generates embeddings to build a persistent FAISS vector store.
+Inference: Orchestrates the retriever-reader loop to generate evidence-based answers using LLMs.
 
-## Quick start (local)
-1. Create a Python virtualenv and install dependencies:
-```bash
+**📂 Repository Structure**
+create_vector_db.py: Pipeline to chunk, embed, and save the FAISS vector store.
+main.py: FastAPI application for the retrieval and generation service.
+scripts/: Modular data engineering helpers:
+01_fetch_pmc.py: Fetch metadata using Entrez.
+02_fetch_guidelines.py: Download and extract text from guideline PDFs.
+03_fetch_reddit.py: Extract community posts via PRAW.
+04_pmc_to_txt.py: Convert JSONL to de-identified text files.
+
+**⚡ Quick Start**
+Environment Setup:
+
+Bash
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-```
+Database Construction: Place source files in data/ and initialize the FAISS store:
 
-2. Prepare data: place `.txt` files under `data/` (or run scripts in `scripts/` to fetch data).
-
-3. Build the vector database:
-```bash
+Bash
 python create_vector_db.py
-```
+API Deployment:
 
-4. Start the API (ensure `faiss_index/` exists):
-```bash
+Bash
 python -m uvicorn main:app --host 127.0.0.1 --port 8000
-```
 
-5. Test `/ask`:
-```bash
-curl -X POST http://127.0.0.1:8000/ask -H 'Content-Type: application/json' \
-  -d '{"question":"What is Myocardial Infarction (MI)？"}'
-```
+**🔒 Security & Privacy**
+Credential Management: Reddit and OpenAI keys should be managed via environment variables or the export_reddit.sh template.
+Exclusion Rules: Local data/, faiss_index/, and venv/ are strictly excluded from version control via .gitignore.
 
-## Reddit credentials
-- Put your Reddit `client_id`, `client_secret` and `user_agent` in `export_reddit.sh` (template provided). Do NOT commit that file. Use `source ./export_reddit.sh` to load in your shell.
-
-## Security & GitHub
-- `export_reddit.sh`, `data/`, `faiss_index/`, and `venv/` are already in `.gitignore`. Double-check before pushing. If a secret was accidentally committed, reset the secret in the provider (e.g. Reddit dev console) and remove it from git history.
-
+**🗺️ Future Roadmap**
+Evaluation Framework: Integrate RAGAS to quantitatively evaluate the faithfulness and relevancy of generated responses.
+Advanced Chunking: Experiment with semantic chunking to better preserve the context of complex medical guidelines.
+Quantized LLM Support: Research local deployment of quantized LLMs (e.g., Llama-3) to ensure data privacy in clinical settings.
