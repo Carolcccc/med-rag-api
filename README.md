@@ -1,68 +1,84 @@
-**Healthcare RAG API**
+# Healthcare RAG API
 
-**🚧 Project Status: Work in Progress (WIP)**
-This repository is a technical prototype currently undergoing active development. The primary focus is on refining retrieval logic and exploring diverse embedding strategies for specialized medical-specific corpora.
+> **🚧 Work in Progress**: This is an active technical prototype focused on refining retrieval logic and exploring embedding strategies for medical-specific corpora.
 
-**Overview**
-This project implements a small-scale Retrieval-Augmented Generation (RAG) pipeline focused on healthcare data ingestion and question-answering. By integrating medical literature (PMC metadata), clinical guidelines, and community-driven insights (Reddit), the system provides context-aware responses grounded in verified data sources.
+## Overview
 
-**🚀 Key Features**
-Multi-Source Ingestion: Automated scripts for fetching PubMed/PMC metadata and clinical guideline PDFs.
+A Retrieval-Augmented Generation (RAG) pipeline designed for healthcare question-answering. The system combines multiple data sources—medical literature (PubMed/PMC), clinical guidelines, and community insights (Reddit)—to provide context-aware, evidence-based responses.
 
-Privacy-First Data Handling: Implements de-identification helpers to process sensitive healthcare text before indexing.
+## Features
 
-Efficient Vector Search: Utilizes FAISS for high-performance similarity search and document retrieval.
+- **Multi-Source Data Ingestion**: Automated fetching of PubMed/PMC metadata, clinical guideline PDFs, and Reddit health discussions
+- **Privacy-First Processing**: Built-in de-identification for sensitive healthcare text
+- **High-Performance Vector Search**: FAISS-powered similarity search for efficient document retrieval
+- **RESTful API**: FastAPI service with asynchronous `/ask` endpoint for real-time question-answering
 
-Asynchronous API: A FastAPI service exposing an /ask endpoint for real-time retriever-LLM orchestration.
+## Architecture
 
-**🛠️ System Architecture**
-Extraction: Fetches structured medical metadata and unstructured community posts via APIs.
+The system follows a four-stage pipeline:
 
-Transformation: Normalizes heterogeneous data sources into a unified .txt format with de-identification logic.
+1. **Extraction**: Fetches structured medical metadata and community posts via APIs
+2. **Transformation**: Normalizes heterogeneous data into unified `.txt` format with de-identification
+3. **Indexing**: Generates embeddings and builds a persistent FAISS vector store
+4. **Inference**: Orchestrates retriever-reader loop for LLM-based answer generation
 
-Indexing: Chunks documents and generates embeddings to build a persistent FAISS vector store.
+## Project Structure
 
-Inference: Orchestrates the retriever-reader loop to generate evidence-based answers using LLMs.
+```
+.
+├── create_vector_db.py          # Vector database creation pipeline
+├── main.py                       # FastAPI application
+├── requirements.txt              # Python dependencies
+└── scripts/
+    ├── 01_fetch_pmc.py          # Fetch PubMed/PMC metadata
+    ├── 02_fetch_guidelines.py   # Download clinical guideline PDFs
+    ├── 03_fetch_reddit.py       # Extract community health posts
+    └── 04_pmc_to_txt.py         # Convert JSONL to de-identified text
+```
 
-**📂 Repository Structure**
-create_vector_db.py: Pipeline to chunk, embed, and save the FAISS vector store.
+## Quick Start
 
-main.py: FastAPI application for the retrieval and generation service.
+### 1. Environment Setup
 
-scripts/: Modular data engineering helpers:
-
-01_fetch_pmc.py: Fetch metadata using Entrez.
-
-02_fetch_guidelines.py: Download and extract text from guideline PDFs.
-
-03_fetch_reddit.py: Extract community posts via PRAW.
-
-04_pmc_to_txt.py: Convert JSONL to de-identified text files.
-
-**⚡ Quick Start**
-Environment Setup:
-
-Bash
+```bash
 python -m venv venv
-source venv/bin/activate
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-Database Construction: Place source files in data/ and initialize the FAISS store:
+```
 
-Bash
+### 2. Build Vector Database
+
+Place your source files in the `data/` directory, then initialize the FAISS index:
+
+```bash
 python create_vector_db.py
-API Deployment:
+```
 
-Bash
+### 3. Run the API
+
+```bash
 python -m uvicorn main:app --host 127.0.0.1 --port 8000
+```
 
-**🔒 Security & Privacy**
-Credential Management: Reddit and OpenAI keys should be managed via environment variables or the export_reddit.sh template.
+The API will be available at `http://127.0.0.1:8000`. Visit `/docs` for interactive API documentation.
 
-Exclusion Rules: Local data/, faiss_index/, and venv/ are strictly excluded from version control via .gitignore.
+## Security & Privacy
 
-**🗺️ Future Roadmap**
-Evaluation Framework: Integrate RAGAS to quantitatively evaluate the faithfulness and relevancy of generated responses.
+- **Credentials**: Store Reddit and OpenAI API keys in environment variables (see `export_reddit.sh` template)
+- **Data Protection**: `data/`, `faiss_index/`, and `venv/` are excluded from version control
+- **De-identification**: Healthcare text is processed to remove sensitive information before indexing
 
-Advanced Chunking: Experiment with semantic chunking to better preserve the context of complex medical guidelines.
+## Roadmap
 
-Quantized LLM Support: Research local deployment of quantized LLMs (e.g., Llama-3) to ensure data privacy in clinical settings.
+- [ ] **Evaluation Framework**: Integrate RAGAS for quantitative assessment of response faithfulness and relevancy
+- [ ] **Advanced Chunking**: Implement semantic chunking to preserve context in complex medical documents
+- [ ] **Local LLM Support**: Deploy quantized models (e.g., Llama-3) for enhanced data privacy in clinical settings
+- [ ] **Extended Data Sources**: Add support for additional medical databases and knowledge bases
+
+## License
+
+This project is for research and educational purposes only. Please ensure compliance with data source terms of service and applicable healthcare regulations.
+
+---
+
+**Note**: This system is not intended for clinical decision-making. Always consult qualified healthcare professionals for medical advice.
